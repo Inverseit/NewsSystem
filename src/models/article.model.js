@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { toJSON, paginate } = require('./plugins');
+const mongoose = require("mongoose");
+const { toJSON, paginate } = require("./plugins");
 
 const articleSchema = mongoose.Schema(
   {
@@ -48,6 +48,6 @@ articleSchema.statics.isNameTaken = async function (name, excludeUserId) {
 /**
  * @typedef Articles
  */
-const Articles = mongoose.model('Articles', articleSchema);
+const Articles = mongoose.model("Articles", articleSchema);
 
 module.exports = Articles;
