@@ -11,6 +11,7 @@ const {
   articleOne,
   articleTwo,
   insertArticles,
+  articleThree,
 } = require("../fixtures/articles.fixture");
 
 setupTestDB();
@@ -76,6 +77,59 @@ describe("Articles routes", () => {
     });
   });
 
+  describe("GET /v1/articles/", () => {
+    test("should return [] if no articles", async () => {
+      await insertUsers([userOne]);
+      const res = await request(app)
+        .get(`/v1/articles/`)
+        .set("Authorization", `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+      expect(res.body).toEqual([]);
+    });
+
+    test("should return array of articles if data is OK", async () => {
+      await insertUsers([userOne, userTwo]);
+      await insertArticles([articleOne, articleTwo, articleThree]);
+      const res = await request(app)
+        .get(`/v1/articles/`)
+        .set("Authorization", `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      const expectedArray = [
+        {
+          id: articleOne._id.toHexString(),
+          name: articleOne.name,
+          content: articleOne.content,
+          author: {
+            ...articleOne.author,
+            _id: articleOne.author._id.toHexString(),
+          },
+        },
+        {
+          id: articleThree._id.toHexString(),
+          name: articleThree.name,
+          content: articleThree.content,
+          author: {
+            ...articleThree.author,
+            _id: articleThree.author._id.toHexString(),
+          },
+        },
+      ];
+
+      expect(res.body).toEqual(expectedArray);
+    });
+
+    test("should return 401 error if access token is missing", async () => {
+      await insertUsers([userOne]);
+      await request(app)
+        .get(`/v1/articles/`)
+        .send()
+        .expect(httpStatus.UNAUTHORIZED);
+    });
+  });
+
   describe("GET /v1/articles/:articleId", () => {
     test("should return 200 and the user object if data is ok", async () => {
       await insertUsers([userOne]);
@@ -117,6 +171,16 @@ describe("Articles routes", () => {
         .set("Authorization", `Bearer ${userOneAccessToken}`)
         .send()
         .expect(httpStatus.FORBIDDEN);
+    });
+
+    test("should return 404 error if user is trying to get not existing article", async () => {
+      await insertUsers([userOne]);
+
+      await request(app)
+        .get(`/v1/articles/${articleTwo._id}`)
+        .set("Authorization", `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.NOT_FOUND);
     });
 
     test("should return 400 error if articleId is not a valid mongo id", async () => {

@@ -12,15 +12,6 @@ const createArticle = {
   }),
 };
 
-const getArticles = {
-  query: Joi.object().keys({
-    name: Joi.string(),
-    sortBy: Joi.string(),
-    limit: Joi.number().integer(),
-    page: Joi.number().integer(),
-  }),
-};
-
 const getArticle = {
   params: Joi.object().keys({
     articleId: Joi.string().custom(objectId),
@@ -47,7 +38,6 @@ const deleteArticle = {
 
 module.exports = {
   createArticle,
-  getArticles,
   getArticle,
   updateArticle,
   deleteArticle,

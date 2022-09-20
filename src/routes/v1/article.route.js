@@ -13,11 +13,7 @@ router
     auth,
     articleController.createArticle
   )
-  .get(
-    validate(articleValidation.getArticles),
-    auth,
-    articleController.getArticles
-  );
+  .get(auth, articleController.getArticles);
 
 router
   .route("/:articleId")

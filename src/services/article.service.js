@@ -24,16 +24,14 @@ const createArticle = async (articleBody, authorUser) => {
 
 /**
  * Query for article
- * @param {Object} filter - Mongo filter
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
+ * @param {Object} user - User who is performing the requset
  * @returns {Promise<QueryResult>}
  */
-const queryArticles = async (filter, options) => {
-  const article = await Articles.paginate(filter, options);
-  return article;
+const queryArticles = async (user) => {
+  const articles = await Articles.find({
+    "author._id": user._id,
+  });
+  return articles;
 };
 
 /**
