@@ -9,31 +9,31 @@ const router = express.Router();
 router
   .route("/")
   .post(
-    auth,
     validate(articleValidation.createArticle),
+    auth,
     articleController.createArticle
   )
   .get(
-    auth,
     validate(articleValidation.getArticles),
+    auth,
     articleController.getArticles
   );
 
 router
   .route("/:articleId")
   .patch(
-    auth,
     validate(articleValidation.updateArticle),
+    auth,
     articleController.updateArticle
   )
   .delete(
-    auth,
     validate(articleValidation.deleteArticle),
+    auth,
     articleController.deleteArticle
   )
   .get(
-    auth,
     validate(articleValidation.getArticles),
+    auth,
     articleController.getArticle
   );
 

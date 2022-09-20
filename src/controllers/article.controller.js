@@ -21,15 +21,19 @@ const getArticle = catchAsync(async (req, res) => {
   if (!article) {
     throw new ApiError(httpStatus.NOT_FOUND, "Article not found");
   }
+  if (article.author._id.toHexString() !== req.user._id.toHexString()) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+  }
   res.send(article);
 });
 
 const updateArticle = catchAsync(async (req, res) => {
-  const article = await articleService.updateArticleById(
+  const updatedArticle = await articleService.updateArticleById(
     req.params.articleId,
-    req.body
+    req.body,
+    req.user
   );
-  res.send(article);
+  res.send(updatedArticle);
 });
 
 const deleteArticle = catchAsync(async (req, res) => {

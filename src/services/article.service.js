@@ -60,10 +60,14 @@ const getArticleByName = async (name) => {
  * @param {Object} updateBody
  * @returns {Promise<Articles>}
  */
-const updateArticleById = async (articleId, updateBody) => {
+const updateArticleById = async (articleId, updateBody, user) => {
   const article = await getArticleById(articleId);
   if (!article) {
     throw new ApiError(httpStatus.NOT_FOUND, "Article not found");
+  }
+  const articleAuthorId = article.author._id.toHexString();
+  if (articleAuthorId !== user._id.toHexString()) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
   }
   if (
     updateBody.name &&

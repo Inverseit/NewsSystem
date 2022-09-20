@@ -33,12 +33,8 @@ const updateArticle = {
   }),
   body: Joi.object()
     .keys({
-      name: Joi.string().required(),
-      content: Joi.string().required(),
-      author: {
-        name: Joi.string().required(),
-        _id: Joi.string().custom(objectId),
-      },
+      name: Joi.string(),
+      content: Joi.string(),
     })
     .min(1),
 };
