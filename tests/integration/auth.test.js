@@ -11,13 +11,9 @@ const { tokenService, emailService } = require("../../src/services");
 const ApiError = require("../../src/utils/ApiError");
 const setupTestDB = require("../utils/setupTestDB");
 const { User, Token } = require("../../src/models");
-const { roleRights } = require("../../src/config/roles");
 const { tokenTypes } = require("../../src/config/tokens");
-const { userOne, admin, insertUsers } = require("../fixtures/user.fixture");
-const {
-  userOneAccessToken,
-  adminAccessToken,
-} = require("../fixtures/token.fixture");
+const { userOne, insertUsers } = require("../fixtures/user.fixture");
+const { userOneAccessToken } = require("../fixtures/token.fixture");
 
 setupTestDB();
 
@@ -744,7 +740,7 @@ describe("Auth middleware", () => {
     });
     const next = jest.fn();
 
-    await auth()(req, httpMocks.createResponse(), next);
+    await auth(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith();
     expect(req.user._id).toEqual(userOne._id);
@@ -755,7 +751,7 @@ describe("Auth middleware", () => {
     const req = httpMocks.createRequest();
     const next = jest.fn();
 
-    await auth()(req, httpMocks.createResponse(), next);
+    await auth(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
@@ -769,11 +765,11 @@ describe("Auth middleware", () => {
   test("should call next with unauthorized error if access token is not a valid jwt token", async () => {
     await insertUsers([userOne]);
     const req = httpMocks.createRequest({
-      headers: { Authorization: "Bearer randomToken" },
+      headers: { Authorization: "Bearer randomNotJWToken" },
     });
     const next = jest.fn();
 
-    await auth()(req, httpMocks.createResponse(), next);
+    await auth(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
@@ -797,7 +793,7 @@ describe("Auth middleware", () => {
     });
     const next = jest.fn();
 
-    await auth()(req, httpMocks.createResponse(), next);
+    await auth(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
@@ -822,7 +818,7 @@ describe("Auth middleware", () => {
     });
     const next = jest.fn();
 
-    await auth()(req, httpMocks.createResponse(), next);
+    await auth(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
@@ -835,7 +831,7 @@ describe("Auth middleware", () => {
 
   test("should call next with unauthorized error if access token is expired", async () => {
     await insertUsers([userOne]);
-    const expires = moment().subtract(1, "minutes");
+    const expires = moment().subtract(2, "minutes");
     const accessToken = tokenService.generateToken(
       userOne._id,
       expires,
@@ -846,7 +842,7 @@ describe("Auth middleware", () => {
     });
     const next = jest.fn();
 
-    await auth()(req, httpMocks.createResponse(), next);
+    await auth(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
@@ -863,7 +859,7 @@ describe("Auth middleware", () => {
     });
     const next = jest.fn();
 
-    await auth()(req, httpMocks.createResponse(), next);
+    await auth(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
@@ -872,53 +868,5 @@ describe("Auth middleware", () => {
         message: "Please authenticate",
       })
     );
-  });
-
-  test("should call next with forbidden error if user does not have required rights and userId is not in params", async () => {
-    await insertUsers([userOne]);
-    const req = httpMocks.createRequest({
-      headers: { Authorization: `Bearer ${userOneAccessToken}` },
-    });
-    const next = jest.fn();
-
-    await auth("anyRight")(req, httpMocks.createResponse(), next);
-
-    expect(next).toHaveBeenCalledWith(expect.any(ApiError));
-    expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({
-        statusCode: httpStatus.FORBIDDEN,
-        message: "Forbidden",
-      })
-    );
-  });
-
-  test("should call next with no errors if user does not have required rights but userId is in params", async () => {
-    await insertUsers([userOne]);
-    const req = httpMocks.createRequest({
-      headers: { Authorization: `Bearer ${userOneAccessToken}` },
-      params: { userId: userOne._id.toHexString() },
-    });
-    const next = jest.fn();
-
-    await auth("anyRight")(req, httpMocks.createResponse(), next);
-
-    expect(next).toHaveBeenCalledWith();
-  });
-
-  test("should call next with no errors if user has required rights", async () => {
-    await insertUsers([admin]);
-    const req = httpMocks.createRequest({
-      headers: { Authorization: `Bearer ${adminAccessToken}` },
-      params: { userId: userOne._id.toHexString() },
-    });
-    const next = jest.fn();
-
-    await auth(...roleRights.get("admin"))(
-      req,
-      httpMocks.createResponse(),
-      next
-    );
-
-    expect(next).toHaveBeenCalledWith();
   });
 });

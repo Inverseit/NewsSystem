@@ -8,7 +8,7 @@ const verifyCallback = (req, resolve, reject) => async (err, user, info) => {
   }
   req.user = user;
 
-  if (req.params.userId !== user.id) {
+  if (req.params.userId && req.params.userId !== user.id) {
     return reject(new ApiError(httpStatus.FORBIDDEN, "Forbidden"));
   }
 
