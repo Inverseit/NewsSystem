@@ -1,6 +1,6 @@
-const httpStatus = require('http-status');
-const { Articles } = require('../models');
-const ApiError = require('../utils/ApiError');
+const httpStatus = require("http-status");
+const { Articles } = require("../models");
+const ApiError = require("../utils/ApiError");
 
 /**
  * Create a article
@@ -12,7 +12,7 @@ const createArticle = async (articleBody, authorUser) => {
   // eslint-disable-next-line no-console
   console.log(authorUser);
   if (await Articles.isNameTaken(articleBody.name)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name already taken');
+    throw new ApiError(httpStatus.BAD_REQUEST, "Name already taken");
   }
   const mergedArticleBody = {
     ...articleBody,
@@ -65,10 +65,13 @@ const getArticleByName = async (name) => {
 const updateArticleById = async (articleId, updateBody) => {
   const article = await getArticleById(articleId);
   if (!article) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Article not found');
+    throw new ApiError(httpStatus.NOT_FOUND, "Article not found");
   }
-  if (updateBody.name && (await Articles.isNameTaken(updateBody.name, articleId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Name is already taken');
+  if (
+    updateBody.name &&
+    (await Articles.isNameTaken(updateBody.name, articleId))
+  ) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Name is already taken");
   }
   Object.assign(article, updateBody);
   await article.save();
@@ -83,7 +86,7 @@ const updateArticleById = async (articleId, updateBody) => {
 const deleteArticleById = async (articleId) => {
   const article = await getArticleById(articleId);
   if (!article) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Article not found');
+    throw new ApiError(httpStatus.NOT_FOUND, "Article not found");
   }
   await article.remove();
   return article;

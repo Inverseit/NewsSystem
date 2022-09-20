@@ -1,9 +1,9 @@
-const config = require('../config/config');
+const config = require("../config/config");
 
 const swaggerDef = {
-  openapi: '3.0.0',
+  openapi: "3.0.0",
   info: {
-    title: 'Some test code',
+    title: "Swagger test code from Ulan",
   },
   servers: [
     {
