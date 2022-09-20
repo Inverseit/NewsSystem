@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { toJSON, paginate } = require("./plugins");
+const { toJSON } = require("./plugins");
 
 const articleSchema = mongoose.Schema(
   {
@@ -32,7 +32,6 @@ const articleSchema = mongoose.Schema(
 
 // add plugin that converts mongoose to json
 articleSchema.plugin(toJSON);
-articleSchema.plugin(paginate);
 
 /**
  * Check if article name is taken

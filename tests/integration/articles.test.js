@@ -70,7 +70,7 @@ describe("Articles routes", () => {
       newArticle.name = articleOne.name;
 
       await request(app)
-        .post("/v1/users")
+        .post("/v1/articles")
         .set("Authorization", `Bearer ${userOneAccessToken}`)
         .send(newArticle)
         .expect(httpStatus.BAD_REQUEST);
@@ -213,20 +213,31 @@ describe("Articles routes", () => {
       await insertArticles([articleOne]);
 
       await request(app)
-        .delete(`/v1/users/${userOne._id}`)
+        .delete(`/v1/articles/${userOne._id}`)
         .send()
         .expect(httpStatus.UNAUTHORIZED);
     });
 
-    test("should return 403 error if user is trying to delete another user", async () => {
+    test("should return 403 error if user is trying to delete another user's article", async () => {
       await insertUsers([userOne, userTwo]);
       await insertArticles([articleOne, articleTwo]);
 
       await request(app)
-        .delete(`/v1/users/${articleTwo._id}`)
+        .delete(`/v1/articles/${articleTwo._id}`)
         .set("Authorization", `Bearer ${userOneAccessToken}`)
         .send()
         .expect(httpStatus.FORBIDDEN);
+    });
+
+    test("should return 404 error if no such article", async () => {
+      await insertUsers([userOne, userTwo]);
+      await insertArticles([articleOne]);
+
+      await request(app)
+        .delete(`/v1/articles/${articleTwo._id}`)
+        .set("Authorization", `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.NOT_FOUND);
     });
 
     test("should return 400 error if articleId is not a valid mongo id", async () => {
@@ -297,6 +308,18 @@ describe("Articles routes", () => {
         .set("Authorization", `Bearer ${userOneAccessToken}`)
         .send(updateBody)
         .expect(httpStatus.FORBIDDEN);
+    });
+
+    test("should return 404 if article does not exist", async () => {
+      await insertUsers([userOne]);
+      await insertArticles([articleOne]);
+      const updateBody = { name: faker.name.findName() };
+
+      await request(app)
+        .patch(`/v1/articles/${articleTwo._id}`)
+        .set("Authorization", `Bearer ${userOneAccessToken}`)
+        .send(updateBody)
+        .expect(httpStatus.NOT_FOUND);
     });
 
     test("should return 400 error if articleId is not a valid mongo id", async () => {

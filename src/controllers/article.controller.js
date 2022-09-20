@@ -34,7 +34,7 @@ const updateArticle = catchAsync(async (req, res) => {
 });
 
 const deleteArticle = catchAsync(async (req, res) => {
-  await articleService.deleteArticleById(req.params.articleId);
+  await articleService.deleteArticleById(req.params.articleId, req.user);
   res.status(httpStatus.NO_CONTENT).send();
 });
 

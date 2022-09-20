@@ -44,15 +44,6 @@ const getArticleById = async (id) => {
 };
 
 /**
- * Get article by email
- * @param {string} email
- * @returns {Promise<Articles>}
- */
-const getArticleByName = async (name) => {
-  return Articles.findOne({ name });
-};
-
-/**
  * Update article by id
  * @param {ObjectId} articleId
  * @param {Object} updateBody
@@ -83,10 +74,14 @@ const updateArticleById = async (articleId, updateBody, user) => {
  * @param {ObjectId} articleId
  * @returns {Promise<Articles>}
  */
-const deleteArticleById = async (articleId) => {
+const deleteArticleById = async (articleId, user) => {
   const article = await getArticleById(articleId);
   if (!article) {
     throw new ApiError(httpStatus.NOT_FOUND, "Article not found");
+  }
+  const articleAuthorId = article.author._id.toHexString();
+  if (articleAuthorId !== user._id.toHexString()) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
   }
   await article.remove();
   return article;
@@ -96,7 +91,6 @@ module.exports = {
   createArticle,
   queryArticles,
   getArticleById,
-  getArticleByName,
   updateArticleById,
   deleteArticleById,
 };

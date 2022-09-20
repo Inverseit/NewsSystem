@@ -9,6 +9,7 @@ module.exports = {
     "src/config",
     "src/app.js",
     "tests",
+    "src/models/plugins/toJSON.plugin.js",
   ],
   coverageReporters: ["text", "lcov", "clover", "html"],
 };
