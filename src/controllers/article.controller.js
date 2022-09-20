@@ -17,8 +17,6 @@ const getArticles = catchAsync(async (req, res) => {
 });
 
 const getArticle = catchAsync(async (req, res) => {
-  // eslint-disable-next-line no-console
-  console.log(req.params);
   const article = await articleService.getArticleById(req.params.articleId);
   if (!article) {
     throw new ApiError(httpStatus.NOT_FOUND, "Article not found");

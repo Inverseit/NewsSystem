@@ -1,6 +1,6 @@
 const faker = require("faker");
 const mongoose = require("mongoose");
-const { Article } = require("../../../src/models");
+const { Articles } = require("../../../src/models");
 
 describe("Article model", () => {
   describe("Article validation", () => {
@@ -17,7 +17,9 @@ describe("Article model", () => {
     });
 
     test("should correctly validate a valid article", async () => {
-      await expect(new Article(newArticle).validate()).resolves.toBeUndefined();
+      await expect(
+        new Articles(newArticle).validate()
+      ).resolves.toBeUndefined();
     });
   });
 });

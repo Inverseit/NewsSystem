@@ -9,8 +9,6 @@ const ApiError = require("../utils/ApiError");
  * @returns {Promise<Articles>}
  */
 const createArticle = async (articleBody, authorUser) => {
-  // eslint-disable-next-line no-console
-  console.log(authorUser);
   if (await Articles.isNameTaken(articleBody.name)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Name already taken");
   }

@@ -9,12 +9,12 @@ const router = express.Router();
 router
   .route("/")
   .post(
-    auth(),
+    auth,
     validate(articleValidation.createArticle),
     articleController.createArticle
   )
   .get(
-    auth("manageArticles"),
+    auth,
     validate(articleValidation.getArticles),
     articleController.getArticles
   );
@@ -22,17 +22,17 @@ router
 router
   .route("/:articleId")
   .patch(
-    auth(),
+    auth,
     validate(articleValidation.updateArticle),
     articleController.updateArticle
   )
   .delete(
-    auth(),
+    auth,
     validate(articleValidation.deleteArticle),
     articleController.deleteArticle
   )
   .get(
-    auth(),
+    auth,
     validate(articleValidation.getArticles),
     articleController.getArticle
   );
