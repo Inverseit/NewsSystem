@@ -5,6 +5,8 @@ const { articleService } = require("../services");
 
 const createArticle = catchAsync(async (req, res) => {
   const article = await articleService.createArticle(req.body, req.user);
+  const articleManager = req.app.get("articleManager");
+  articleManager.created(article._id, article.name);
   res.status(httpStatus.CREATED).send(article);
 });
 
@@ -30,11 +32,15 @@ const updateArticle = catchAsync(async (req, res) => {
     req.body,
     req.user
   );
+  const articleManager = req.app.get("articleManager");
+  articleManager.updated(req.params.articleId, req.body);
   res.send(updatedArticle);
 });
 
 const deleteArticle = catchAsync(async (req, res) => {
   await articleService.deleteArticleById(req.params.articleId, req.user);
+  const articleManager = req.app.get("articleManager");
+  articleManager.deleted(req.params.articleId);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
