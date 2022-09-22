@@ -7,7 +7,6 @@ class NewsAgency {
   }
 
   onCreate(id, name, date) {
-    console.log(this);
     console.log(`Noted that article(${id}) with ${name} is created at ${date}`);
   }
 
